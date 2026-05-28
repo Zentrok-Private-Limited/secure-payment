@@ -95,7 +95,7 @@ export default function PaymentPage() {
     <div className="min-h-screen bg-[#f6f9fc] px-4 py-10">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
         {/* LEFT SIDE */}
-        <div className="border flex justify-center">
+        <div className="flex justify-center">
           <div className="w-full max-w-md">
             <p className="text-2xl font-semibold tracking-tight text-[#30313d] pb-8">
               Payment for IP Private Licence Key <br />
