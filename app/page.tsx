@@ -95,13 +95,13 @@ export default function PaymentPage() {
     <div className="min-h-screen bg-[#f6f9fc] px-4 py-10">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
         {/* LEFT SIDE */}
-        <div className="flex justify-center">
+        <div className="border flex justify-center">
           <div className="w-full max-w-md">
             <p className="text-2xl font-semibold tracking-tight text-[#30313d] pb-8">
               Payment for IP Private Licence Key <br />
               (Dedicated Secured Server)
             </p>
-            <div className="border border-gray-300 rounded-xl bg-white p-5 shadow-sm">
+            <div className=" border-gray-300 rounded-xl bg-white p-5 shadow-sm">
               <div className="text-[54px] font-light tracking-tight text-[#30313d]">
                 US$ {amount || "0.00"}
               </div>
@@ -118,7 +118,8 @@ export default function PaymentPage() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="w-full max-w-107.5 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg">
+        <div className="flex justify-center">
+          <div className="w-full max-w-107.5 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg">
           {/* CONTACT INFO */}
           <div className="p-5 border-b border-gray-200">
             <h2 className="text-[30px] font-semibold text-[#30313d] mb-5">
@@ -283,7 +284,6 @@ export default function PaymentPage() {
 
                     <select className="w-full outline-none bg-white text-[15px]">
                       <option>United States</option>
-                      <option>India</option>
                       <option>Canada</option>
                     </select>
                   </div>
@@ -384,6 +384,7 @@ export default function PaymentPage() {
               )}
             </form>
           </div>
+        </div>
         </div>
       </div>
 
