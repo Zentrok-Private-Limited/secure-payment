@@ -88,8 +88,9 @@ export default function PaymentPage() {
     }
   };
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
+  try {
     setLoading(true);
 
     const formData = {
@@ -111,42 +112,68 @@ export default function PaymentPage() {
       lastName,
     };
 
+    console.log("FORM DATA:", formData);
+
+    const response = await fetch("/api/payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    console.log("STATUS:", response.status);
+
+    // SAFE JSON PARSE
+    let result;
+
     try {
-      const response = await fetch("/api/payment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        setSuccess(true);
-
-        setAmount("");
-        setEmail("");
-        setName("");
-        setPhone("");
-        setCardNumber("");
-        setExpiry("");
-        setCvv("");
-        setCardholdername("");
-        setAddressone("");
-        setAddresstwo("");
-        setCity("");
-        setZipCode("");
-        setState("");
-        setFirstName("");
-        setLastName("");
-      }
-    } catch (error) {
-      console.log("ERROR:", error);
+      result = await response.json();
+    } catch {
+      throw new Error("Invalid JSON response from server");
     }
 
+    console.log("SERVER RESPONSE:", result);
+
+    // HANDLE FAILED RESPONSES
+    if (!response.ok) {
+      throw new Error(
+        result?.error ||
+        result?.message ||
+        `Request failed with status ${response.status}`
+      );
+    }
+
+    // SUCCESS
+    if (result.success) {
+      setSuccess(true);
+
+      setAmount("");
+      setEmail("");
+      setName("");
+      setPhone("");
+      setCardNumber("");
+      setExpiry("");
+      setCvv("");
+      setCardholdername("");
+      setCountry("US");
+      setAddressone("");
+      setAddresstwo("");
+      setCity("");
+      setZipCode("");
+      setState("");
+      setFirstName("");
+      setLastName("");
+    }
+
+  } catch (error: any) {
+    console.error("PAYMENT ERROR:", error);
+
+    alert(error.message || "Something went wrong");
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#f6f9fc] px-4 py-6">
