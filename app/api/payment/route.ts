@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Cx Payment Request!A:O",
+      range: "Cx Payment Request!A:P",
       valueInputOption: "USER_ENTERED",
 
       requestBody: {

@@ -42,21 +42,15 @@ export default function PaymentPage() {
 
   const handleZipChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.toUpperCase();
-
     setZipCode(value);
 
     try {
-      // ======================
-      // USA
-      // ======================
       if (country === "US") {
         const zip = value.replace(/\D/g, "");
 
         if (zip.length === 5) {
           const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
-
           const data = await res.json();
-
           console.log("US DATA:", data);
 
           if (data.places?.length > 0) {
@@ -66,14 +60,10 @@ export default function PaymentPage() {
         }
       }
 
-      // ======================
-      // CANADA
+    
       if (country === "CA") {
         const postalCode = value.replace(/\s/g, "").toUpperCase();
-
         console.log("POSTAL:", postalCode);
-
-        // VALIDATE FORMAT
         const regex = /^[A-Z]\d[A-Z]\d[A-Z]\d$/;
 
         if (regex.test(postalCode)) {
