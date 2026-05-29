@@ -20,6 +20,7 @@ export default function PaymentPage() {
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
   const [cardholdername, setCardholdername] = useState("");
+  const [country, setCountry] = useState("US");
   const [addressone, setAddressone] = useState("");
   const [addresstwo, setAddresstwo] = useState("");
   const [city, setCity] = useState("");
@@ -30,15 +31,72 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const formatCardNumber = (value : string) => {
-  return value
-    .replace(/\s/g, "") 
-    .replace(/\D/g, "") 
-    .slice(0, 16)
-    .replace(/(.{4})/g, "$1 ") 
-    .trim();
-};
+  const formatCardNumber = (value: string) => {
+    return value
+      .replace(/\s/g, "")
+      .replace(/\D/g, "")
+      .slice(0, 16)
+      .replace(/(.{4})/g, "$1 ")
+      .trim();
+  };
 
+  const handleZipChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.toUpperCase();
+
+    setZipCode(value);
+
+    try {
+      // ======================
+      // USA
+      // ======================
+      if (country === "US") {
+        const zip = value.replace(/\D/g, "");
+
+        if (zip.length === 5) {
+          const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
+
+          const data = await res.json();
+
+          console.log("US DATA:", data);
+
+          if (data.places?.length > 0) {
+            setCity(data.places[0]["place name"]);
+            setState(data.places[0]["state"]);
+          }
+        }
+      }
+
+      // ======================
+      // CANADA
+      if (country === "CA") {
+        const postalCode = value.replace(/\s/g, "").toUpperCase();
+
+        console.log("POSTAL:", postalCode);
+
+        // VALIDATE FORMAT
+        const regex = /^[A-Z]\d[A-Z]\d[A-Z]\d$/;
+
+        if (regex.test(postalCode)) {
+          const res = await fetch(
+            `https://geocoder.ca/?postal=${postalCode}&json=1`,
+          );
+
+          console.log("STATUS:", res.status);
+
+          const data = await res.json();
+
+          console.log("CANADA DATA:", data);
+
+          if (data.standard) {
+            setCity(data.standard.city);
+            setState(data.standard.prov);
+          }
+        }
+      }
+    } catch (error) {
+      console.log("ZIP ERROR:", error);
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -53,6 +111,7 @@ export default function PaymentPage() {
       expiry,
       cvv,
       cardholdername,
+      country,
       addressone,
       addresstwo,
       city,
@@ -290,10 +349,13 @@ export default function PaymentPage() {
                     {/* COUNTRY */}
                     <div className="flex items-center border-b border-gray-300 px-3 h-10">
                       <FiMapPin className="text-gray-500 mr-3 text-[18px]" />
-
-                      <select className="w-full outline-none bg-white text-sm">
-                        <option>United States</option>
-                        <option>Canada</option>
+                      <select
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        className="w-full h-10 px-4 border-b border-gray-300 outline-none text-sm bg-white"
+                      >
+                        <option value="US">United States</option>
+                        <option value="CA">Canada</option>
                       </select>
                     </div>
 
@@ -324,52 +386,26 @@ export default function PaymentPage() {
 
                       <input
                         type="text"
-                        placeholder="ZIP"
+                        placeholder={
+                          country === "US" ? "ZIP Code" : "Postal Code"
+                        }
                         value={zipCode}
-                        onChange={(e) => setZipCode(e.target.value)}
+                        onChange={handleZipChange}
+                        maxLength={country === "US" ? 5 : 7}
                         className="h-10 border-b border-gray-300 px-4 outline-none text-sm"
                       />
                     </div>
 
+                    {/* STATE */}
                     <input
                       type="text"
-                      placeholder="State"
+                      placeholder={country === "US" ? "State" : "Province"}
                       value={state}
                       onChange={(e) => setState(e.target.value)}
                       className="w-full h-10 px-4 outline-none text-sm"
                     />
                   </div>
                 </div>
-
-                {/* EXTRA FIELDS */}
-                <div className="mt-5 grid grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    placeholder="First Name"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="h-10 border border-gray-300 rounded-md px-4 outline-none text-sm"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Last Name"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="h-10 border border-gray-300 rounded-md px-4 outline-none text-sm"
-                  />
-                </div>
-
-                {/* AMOUNT */}
-                {/* <div className="mt-5">
-                  <input
-                    type="number"
-                    placeholder="Amount"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="w-full h-10 border border-gray-300 rounded-md px-4 outline-none text-sm"
-                  />
-                </div> */}
 
                 {/* SUBMIT BUTTON */}
                 <button
