@@ -56,16 +56,18 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+  console.error("GOOGLE SHEETS ERROR:", error);
 
-    return NextResponse.json(
-      {
-        success: false,
-      },
-      {
-        status: 500,
-      }
-    );
-  }
+  return NextResponse.json(
+    {
+      success: false,
+      error: error.message,
+      details: error.response?.data || null,
+    },
+    {
+      status: 500,
+    }
+  );
+}
 }
