@@ -34,6 +34,7 @@ export default function PaymentPage() {
   return value
     .replace(/\s/g, "") 
     .replace(/\D/g, "") 
+    .slice(0, 16)
     .replace(/(.{4})/g, "$1 ") 
     .trim();
 };
