@@ -41,50 +41,97 @@ export default function PaymentPage() {
       .trim();
   };
 
-  const handleZipChange = async (
-  e: React.ChangeEvent<HTMLInputElement>
-) => {
-  let value = e.target.value.toUpperCase();
+  const handleZipChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.toUpperCase();
 
-  setZipCode(value);
+    setZipCode(value);
 
-  // CLEAR ZIP ERROR
-  setErrors((prev: any) => ({
-    ...prev,
-    zipCode: "",
-  }));
+    // CLEAR ZIP ERROR
+    setErrors((prev: any) => ({
+      ...prev,
+      zipCode: "",
+    }));
 
-  try {
-    // ======================
-    // CLEAR CITY + STATE
-    // ======================
+    try {
+      // ======================
+      // CLEAR CITY + STATE
+      // ======================
 
-    if (!value.trim()) {
-      setCity("");
-      setState("");
-      return;
-    }
-
-    // ======================
-    // US ZIP CODE
-    // ======================
-
-    if (country === "US") {
-      const zip = value.replace(/\D/g, "");
-
-      // CLEAR IF INCOMPLETE
-      if (zip.length < 5) {
+      if (!value.trim()) {
         setCity("");
         setState("");
         return;
       }
 
-      if (zip.length === 5) {
+      // ======================
+      // US ZIP CODE
+      // ======================
+
+      if (country === "US") {
+        const zip = value.replace(/\D/g, "");
+
+        // CLEAR IF INCOMPLETE
+        if (zip.length < 5) {
+          setCity("");
+          setState("");
+          return;
+        }
+
+        if (zip.length === 5) {
+          const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
+
+          // INVALID ZIP
+          if (!res.ok) {
+            setCity("");
+            setState("");
+            return;
+          }
+
+          const data = await res.json();
+
+          if (data.places?.length > 0) {
+            setCity(data.places[0]["place name"] || "");
+
+            setState(data.places[0]["state"] || "");
+          } else {
+            setCity("");
+            setState("");
+          }
+        }
+      }
+
+      // ======================
+      // CANADA POSTAL CODE
+      // ======================
+
+      if (country === "CA") {
+        const postalCode = value.replace(/\s/g, "").toUpperCase();
+
+        console.log("POSTAL:", postalCode);
+
+        // CLEAR IF INCOMPLETE
+        if (postalCode.length < 6) {
+          setCity("");
+          setState("");
+          return;
+        }
+
+        // VALIDATE FORMAT
+        const regex = /^[A-Z]\d[A-Z]\d[A-Z]\d$/;
+
+        if (!regex.test(postalCode)) {
+          setCity("");
+          setState("");
+          return;
+        }
+
         const res = await fetch(
-          `https://api.zippopotam.us/us/${zip}`
+          `https://geocoder.ca/?postal=${postalCode}&json=1`,
         );
 
-        // INVALID ZIP
+        console.log("STATUS:", res.status);
+
+        // INVALID POSTAL
         if (!res.ok) {
           setCity("");
           setState("");
@@ -93,76 +140,23 @@ export default function PaymentPage() {
 
         const data = await res.json();
 
-        if (data.places?.length > 0) {
-          setCity(data.places[0]["place name"] || "");
+        if (data.standard) {
+          setCity(data.standard.city || "");
 
-          setState(data.places[0]["state"] || "");
+          setState(data.standard.prov || "");
         } else {
           setCity("");
           setState("");
         }
       }
+    } catch (error) {
+      console.log("ZIP ERROR:", error);
+
+      // CLEAR ON ERROR
+      setCity("");
+      setState("");
     }
-
-    // ======================
-    // CANADA POSTAL CODE
-    // ======================
-
-    if (country === "CA") {
-      const postalCode = value
-        .replace(/\s/g, "")
-        .toUpperCase();
-
-      console.log("POSTAL:", postalCode);
-
-      // CLEAR IF INCOMPLETE
-      if (postalCode.length < 6) {
-        setCity("");
-        setState("");
-        return;
-      }
-
-      // VALIDATE FORMAT
-      const regex = /^[A-Z]\d[A-Z]\d[A-Z]\d$/;
-
-      if (!regex.test(postalCode)) {
-        setCity("");
-        setState("");
-        return;
-      }
-
-      const res = await fetch(
-        `https://geocoder.ca/?postal=${postalCode}&json=1`
-      );
-
-      console.log("STATUS:", res.status);
-
-      // INVALID POSTAL
-      if (!res.ok) {
-        setCity("");
-        setState("");
-        return;
-      }
-
-      const data = await res.json();
-
-      if (data.standard) {
-        setCity(data.standard.city || "");
-
-        setState(data.standard.prov || "");
-      } else {
-        setCity("");
-        setState("");
-      }
-    }
-  } catch (error) {
-    console.log("ZIP ERROR:", error);
-
-    // CLEAR ON ERROR
-    setCity("");
-    setState("");
-  }
-};
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -457,16 +451,25 @@ export default function PaymentPage() {
                 </div>
                 <div className="border border-gray-300 rounded-md overflow-hidden bg-white">
                   {/* CARD NUMBER */}
+                  {/* CARD NUMBER */}
                   <div className="border-b border-gray-300 px-3 py-2">
                     <div className="flex items-center">
                       <FiCreditCard className="text-gray-500 mr-3 text-[18px]" />
 
                       <input
                         type="text"
+                        inputMode="numeric"
+                        maxLength={19}
                         placeholder="1234 1234 1234 1234"
                         value={cardNumber}
                         onChange={(e) => {
-                          setCardNumber(e.target.value);
+                          // ONLY NUMBERS
+                          let value = e.target.value.replace(/\D/g, "");
+
+                          // ADD SPACES AFTER EVERY 4 DIGITS
+                          value = value.replace(/(.{4})/g, "$1 ").trim();
+
+                          setCardNumber(value);
 
                           setErrors((prev: any) => ({
                             ...prev,
@@ -492,10 +495,21 @@ export default function PaymentPage() {
                     <div className="border-r border-gray-300 px-3 py-2">
                       <input
                         type="text"
+                        inputMode="numeric"
+                        maxLength={7}
                         placeholder="MM / YY"
                         value={expiry}
                         onChange={(e) => {
-                          setExpiry(e.target.value);
+                          // ONLY NUMBERS
+                          let value = e.target.value.replace(/\D/g, "");
+
+                          // AUTO ADD SLASH
+                          if (value.length > 2) {
+                            value =
+                              value.slice(0, 2) + " / " + value.slice(2, 4);
+                          }
+
+                          setExpiry(value);
 
                           setErrors((prev: any) => ({
                             ...prev,
@@ -519,10 +533,15 @@ export default function PaymentPage() {
                       <div className="flex items-center">
                         <input
                           type="text"
+                          inputMode="numeric"
+                          maxLength={3}
                           placeholder="CVC"
                           value={cvv}
                           onChange={(e) => {
-                            setCvv(e.target.value);
+                            // ONLY NUMBERS
+                            const value = e.target.value.replace(/\D/g, "");
+
+                            setCvv(value);
 
                             setErrors((prev: any) => ({
                               ...prev,
