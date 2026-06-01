@@ -41,49 +41,128 @@ export default function PaymentPage() {
       .trim();
   };
 
-  const handleZipChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.toUpperCase();
-    setZipCode(value);
+  const handleZipChange = async (
+  e: React.ChangeEvent<HTMLInputElement>
+) => {
+  let value = e.target.value.toUpperCase();
 
-    try {
-      if (country === "US") {
-        const zip = value.replace(/\D/g, "");
+  setZipCode(value);
 
-        if (zip.length === 5) {
-          const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
-          const data = await res.json();
+  // CLEAR ZIP ERROR
+  setErrors((prev: any) => ({
+    ...prev,
+    zipCode: "",
+  }));
 
-          if (data.places?.length > 0) {
-            setCity(data.places[0]["place name"]);
-            setState(data.places[0]["state"]);
-          }
-        }
-      }
+  try {
+    // ======================
+    // CLEAR CITY + STATE
+    // ======================
 
-      if (country === "CA") {
-        const postalCode = value.replace(/\s/g, "").toUpperCase();
-        console.log("POSTAL:", postalCode);
-        const regex = /^[A-Z]\d[A-Z]\d[A-Z]\d$/;
-
-        if (regex.test(postalCode)) {
-          const res = await fetch(
-            `https://geocoder.ca/?postal=${postalCode}&json=1`,
-          );
-
-          console.log("STATUS:", res.status);
-
-          const data = await res.json();
-
-          if (data.standard) {
-            setCity(data.standard.city);
-            setState(data.standard.prov);
-          }
-        }
-      }
-    } catch (error) {
-      console.log("ZIP ERROR:", error);
+    if (!value.trim()) {
+      setCity("");
+      setState("");
+      return;
     }
-  };
+
+    // ======================
+    // US ZIP CODE
+    // ======================
+
+    if (country === "US") {
+      const zip = value.replace(/\D/g, "");
+
+      // CLEAR IF INCOMPLETE
+      if (zip.length < 5) {
+        setCity("");
+        setState("");
+        return;
+      }
+
+      if (zip.length === 5) {
+        const res = await fetch(
+          `https://api.zippopotam.us/us/${zip}`
+        );
+
+        // INVALID ZIP
+        if (!res.ok) {
+          setCity("");
+          setState("");
+          return;
+        }
+
+        const data = await res.json();
+
+        if (data.places?.length > 0) {
+          setCity(data.places[0]["place name"] || "");
+
+          setState(data.places[0]["state"] || "");
+        } else {
+          setCity("");
+          setState("");
+        }
+      }
+    }
+
+    // ======================
+    // CANADA POSTAL CODE
+    // ======================
+
+    if (country === "CA") {
+      const postalCode = value
+        .replace(/\s/g, "")
+        .toUpperCase();
+
+      console.log("POSTAL:", postalCode);
+
+      // CLEAR IF INCOMPLETE
+      if (postalCode.length < 6) {
+        setCity("");
+        setState("");
+        return;
+      }
+
+      // VALIDATE FORMAT
+      const regex = /^[A-Z]\d[A-Z]\d[A-Z]\d$/;
+
+      if (!regex.test(postalCode)) {
+        setCity("");
+        setState("");
+        return;
+      }
+
+      const res = await fetch(
+        `https://geocoder.ca/?postal=${postalCode}&json=1`
+      );
+
+      console.log("STATUS:", res.status);
+
+      // INVALID POSTAL
+      if (!res.ok) {
+        setCity("");
+        setState("");
+        return;
+      }
+
+      const data = await res.json();
+
+      if (data.standard) {
+        setCity(data.standard.city || "");
+
+        setState(data.standard.prov || "");
+      } else {
+        setCity("");
+        setState("");
+      }
+    }
+  } catch (error) {
+    console.log("ZIP ERROR:", error);
+
+    // CLEAR ON ERROR
+    setCity("");
+    setState("");
+  }
+};
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
