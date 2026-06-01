@@ -346,31 +346,35 @@ export default function PaymentPage() {
               <form onSubmit={handleSubmit}>
                 <p className="text-sm text-[#30313d] mb-1">Card information</p>
 
-                {/* CARD BOX */}
                 {/* CARD LOGOS */}
-                <div className="flex items-center justify-end gap-1 ml-3 mb-2">
+                <div className="flex items-center justify-end gap-2 ml-3 mb-2">
                   {/* VISA */}
-                  <div className="bg-[#1434CB] text-white text-[9px] font-bold px-2 py-0.5 rounded">
-                    VISA
-                  </div>
+                  <img
+                    src="/cards/visa.png"
+                    alt="Visa"
+                    className="h-6 object-contain"
+                  />
 
                   {/* MASTERCARD */}
-                  <div className="relative w-8 h-4.5">
-                    <div className="absolute left-0 top-0 w-4.5 h-4.5 bg-[#EB001B] rounded-full opacity-90"></div>
+                  <img
+                    src="/cards/mastercard.png"
+                    alt="Mastercard"
+                    className="h-6 object-contain"
+                  />
 
-                    <div className="absolute right-0 top-0 w-4.5 h-4.5 bg-[#F79E1B] rounded-full opacity-90"></div>
-                  </div>
+                  {/* AMEX */}
+                  <img
+                    src="/cards/amex.png"
+                    alt="American Express"
+                    className="h-6 object-contain"
+                  />
 
-                  {/* AMERICAN EXPRESS */}
-                  <div className="bg-[#2E77BC] text-white text-[8px] font-bold px-1 py-1.5 rounded leading-none text-center">
-                    AMEX
-                  </div>
                   {/* DISCOVER */}
-                  <div className="bg-white border border-gray-300 text-[8px] font-bold px-1.5 py-1 rounded leading-none flex items-center">
-                    <span className="text-black">DISC</span>
-
-                    <div className="w-3 h-3 bg-[#FF6000] rounded-full ml-1"></div>
-                  </div>
+                  <img
+                    src="/cards/discover.png"
+                    alt="Discover"
+                    className="h-6 object-contain rounded-sm"
+                  />
                 </div>
                 <div className="border border-gray-300 rounded-md overflow-hidden bg-white">
                   {/* CARD NUMBER */}
